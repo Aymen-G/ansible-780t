@@ -1,0 +1,10 @@
+---
+# Standards: 0.3
+- name: Converge
+  hosts: all
+#  become: true
+  roles:
+  - role: edcs.docker
+  environment:
+    http_proxy: "http://proxycs.ac.cs:3128"
+    https_proxy: "http://proxycs.ac.cs:3128"

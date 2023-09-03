@@ -1,0 +1,32 @@
+---
+# Standards: 0.3
+# tasks file for edcs.docker
+
+- name: create docker.service.d
+  file:
+    path: "{{ edcs_docker_service_directory }}" 
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: create template http-proxy.conf
+  template:
+    src: "{{ edcs_docker_template_http_proxy_conf }}"
+    dest: /etc/systemd/system/docker.service.d/http-proxy.conf
+    owner: root
+    group: root
+    mode: '0644'
+  register: fichier_modifie
+
+- name: Set restart_docker to true if file is modified
+  set_fact:
+    restart_docker: true
+  when: fichier_modifie.changed
+
+- name: Trigger Prompt handler if file is modified
+  command: echo "Triggering Prompt handler"
+  when: restart_docker
+  notify:
+    - Prompt
+    - reload systemd et restart de docker

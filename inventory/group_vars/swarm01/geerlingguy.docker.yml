@@ -1,0 +1,14 @@
+# # # docker_apt_repository: deb http://debian.depot.edcs.fr/Docker/docker bullseye stable
+# # #docker_repo_url: http://debian.depot.edcs.fr/Docker/docker 
+# # docker_apt_gpg_key: 
+docker_install_compose_plugin: true
+docker_install_compose: false
+# docker_docker_conf: "{{ lookup('env','PWD') }}/files/groups/swarm01/etc/daemon.json.j2"
+edcs_docker_template_http_proxy_conf: "{{ lookup('env','PWD') }}/files/groups/swarm01/etc/docker-proxy.conf.j2"
+docker_service_manage: true
+
+docker_users:
+  - dockerjail
+
+
+

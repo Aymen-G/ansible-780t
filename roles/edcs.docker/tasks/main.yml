@@ -1,0 +1,34 @@
+---
+# Standards: 0.3
+# tasks file for edcs.docker
+
+- name: create docker.service.d
+  file:
+    path: "{{ edcs_docker_service_directory }}" 
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: create template http-proxy.conf
+  template:
+    src: "{{ edcs_docker_template_http_proxy_conf }}"
+    dest: /etc/systemd/system/docker.service.d/http-proxy.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: reload systemd et restart de docker
+
+- name: creation de fichier de conf de docker
+  template:
+    src: "{{ edcs_docker_dameon_conf }}"
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart de docker
+
+- name: configuration de namespace docker
+  import_tasks: namespace.yml
+  when: docker_userns_remap is defined
+

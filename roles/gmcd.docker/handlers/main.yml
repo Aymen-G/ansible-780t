@@ -1,0 +1,21 @@
+
+- name: Prompt
+  pause:
+    prompt: "Des fichiers de configuration Docker ont été modifiés, voulez-vous redémarrer Docker maintenant ? (oui/non)"
+  register: user_input
+  
+- name: reload systemd et restart de docker
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: docker
+  when: user_input.user_input == "oui"
+
+
+- name: restart de docker
+  systemd:
+    state: restarted
+    name: docker
+
+
+

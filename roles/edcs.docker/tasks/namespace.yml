@@ -1,0 +1,34 @@
+# namespace.yml
+#
+- name: Creation du group
+  group:
+    name: "{{ docker_namespace_group }}"
+    system: yes
+    state: present
+    gid: "{{ docker_namespace_gid }}"
+
+- name: Creation du user
+  user:
+    name: "{{ docker_namespace_user }}"
+    group: "{{ docker_namespace_group }}"
+    system: yes
+    shell: "{{ docker_namespace_shell }}"  
+    home: "{{ docker_namespace_homedir }}"
+    create_home: "{{ docker_namespace_create_home }}" 
+    state: present
+    uid: "{{ docker_namespace_uid }}" 
+
+- name: Definition du subuid
+  lineinfile:
+    dest: /etc/subuid
+    regexp: "^{{ docker_namespace_user }}"
+    line: "{{ docker_namespace_user }}:{{ docker_id_remap }}:65536"
+    #line: "{{ docker_namespace_user }}:{{ docker_namespace_uid  }}:65536"
+
+- name: Definition du subgid
+  lineinfile:
+    dest: /etc/subgid
+    regexp: "^{{ docker_namespace_group }}"
+    line: "{{ docker_namespace_group }}:{{ docker_id_remap }}:65536"
+    #line: "{{ docker_namespace_group }}:{{ docker_namespace_uid  }}:65536"
+

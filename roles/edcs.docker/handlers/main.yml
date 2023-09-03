@@ -1,0 +1,13 @@
+---
+# Standards: 0.3
+# handlers file for edcs.docker
+
+- name: reload systemd et restart de docker
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: docker
+- name: restart de docker
+  systemd:
+    state: restarted
+    name: docker

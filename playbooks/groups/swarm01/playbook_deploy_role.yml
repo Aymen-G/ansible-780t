@@ -1,0 +1,7 @@
+---
+- name: Déployer Docker sur swarm01
+  hosts: swarm01
+  become: yes
+  roles:
+    - gmcd.docker
+    

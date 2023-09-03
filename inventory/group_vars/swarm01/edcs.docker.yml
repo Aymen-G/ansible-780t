@@ -1,0 +1,10 @@
+docker_namespace_group: dockerjail
+docker_namespace_user: dockerjail
+docker_namespace_create_home: yes
+docker_namespace_homedir: "/var/lib/dockerjail"
+docker_namespace_shell: "/bin/bash"
+docker_namespace_uid : 25074
+docker_namespace_gid : 25074
+docker_userns_remap: yes
+docker_id_remap: 50000000
+edcs_docker_dameon_conf:  "{{ lookup('env','PWD') }}/files/groups/swarm01/etc/daemon.json.j2"

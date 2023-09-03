@@ -1,0 +1,20 @@
+---
+# Standards: 0.3
+# defaults file for edcs.docker
+
+docker_http_proxy: ""
+docker_no_proxy: "localhost,127.0.0.1"
+docker_dockerd_args: "-H fd://"
+docker_userns_remap: {}
+docker_namespace_group: "dockremap"
+docker_namespace_user: "dockremap"
+docker_id_remap: 456123 
+edcs_docker_service_directory: "/etc/systemd/system/docker.service.d/"
+edcs_template_http_proxy_conf: "templates/http-proxy.conf.j2"
+edcs_docker_dameon_conf: "templates/daemon.conf.j2"
+
+docker_namespace_create_home: no
+docker_namespace_homedir: /var/lib/dockremap
+docker_namespace_shell: /bin/false
+docker_namespace_uid: 25555
+docker_namespace_gid: 25555

@@ -1,0 +1,88 @@
+---
+# Standards: 0.3
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+  enabled: False
+platforms:
+
+# Exceptionnellement, pour accéder à tout internet
+# rajouter les lignes suivantes dans la déclaration du container
+# les variables d'env doivent exister sur l'hôte
+#  env:
+#    http_proxy: ${http_proxy}
+#    https_proxy: ${https_proxy}
+#    HTTP_PROXY: ${HTTP_PROXY}
+#    HTTPS_PROXY: ${HTTPS_PROXY}
+#    no_proxy: ${no_proxy}
+
+- name: ${USER}-debian9
+  image: "registry.gitlab.edcs.fr/docker/images_dev/debian9" 
+  command: ${MOLECULE_DOCKER_COMMAND:-"/lib/systemd/systemd"}
+  volumes:
+  - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  tmpfs:
+  - /tmp
+  - /run
+  - /run/lock
+  pre_build_image: true
+  privileged: true
+
+- name: ${USER}-ubuntu18.04
+  image: "registry.gitlab.edcs.fr/docker/images_dev/ubuntu18.04" 
+  command: ${MOLECULE_DOCKER_COMMAND:-"/lib/systemd/systemd"}
+  volumes:
+  - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  tmpfs:
+  - /tmp
+  - /run
+  - /run/lock
+  pre_build_image: true
+  privileged: true
+
+- name: ${USER}-centos7
+  image: "registry.gitlab.edcs.fr/docker/images_dev/centos7" 
+  command: ${MOLECULE_DOCKER_COMMAND:-"/lib/systemd/systemd"}
+  volumes:
+  - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  tmpfs:
+  - /tmp
+  - /run
+  - /run/lock
+  pre_build_image: true
+  privileged: true
+
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      gathering: smart
+      fact_caching: jsonfile
+      fact_caching_connection: "${MOLECULE_EPHEMERAL_DIRECTORY}/ansible-cache" 
+      callback_whitelist: "profile_tasks, timer" 
+      gather_subset: '!all'
+      remote_tmp: /tmp/
+    ssh_connection:
+      pipelining: true
+
+  inventory:
+    group_vars:
+      all:
+        # Proxy URL (apt-cacher)
+        docker_molecule_proxy_packages: ${EDCS_PROXY_PKG}
+#    links:
+#      group_vars: ${MOLECULE_PROJECT_DIRECTORY}/../../inventory/group_vars/
+#      host_vars: ${MOLECULE_PROJECT_DIRECTORY}/../../inventory/host_vars/
+  lint:
+    name: ansible-lint
+  playbooks:
+    prepare: /etc/molecule/prepare.yml
+scenario:
+  name: default
+verifier:
+  name: testinfra
+  lint:
+    name: flake8

@@ -1,0 +1,48 @@
+---
+- name: Déployer l'utilisateur ansible-ag
+  hosts: swarm01
+  become: yes
+
+  tasks:
+
+
+    - name: Créer le groupe ansible-ag
+      group:
+        name: ansible-ag
+        gid: 25055
+        state: present
+
+    - name: Créer l'utilisateur ansible-ag
+      user:
+        name: ansible-ag
+        uid: 25055
+        group: ansible-ag
+        home: /var/lib/ansible-ag
+        system: yes
+        createhome: yes
+
+# Ajouts des répértoires ssh
+    - name: Create ansible ssh directory
+      file:
+        path: "/var/lib/ansible-ag.ssh"
+        state: directory
+        owner: ansible-ag
+        group: ansible-ag
+        mode: 0700
+      no_log: True
+
+
+
+# Ajouts des clés ssh gmcd_users sur gmcd_hosts
+    - name: Add authorized keys
+      authorized_key:
+        user: ansible-ag
+        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC4s4JZwWWmgKMmWQ10/m6YRVWFbzERYOCNohHt9uvwp+QbwV1G0C8Fm2Zm0lf4mLWwSeS+a3BaX15SL7sNAHeuFhg5htUpIDBCvH3LidAixADCftaWyZijp/MvDNJmioU0TTw78XaTT2ZRFb43JvH2tW08sUVxNr5skQtotdfPiZnLSA7DLCnIzLW+Ac8KmhLuOr8RdKj83kmq5S57o2JdurY/YPpWq43T9SakqERKY5a7U0OjxtVCYiuaD7yG+X3lZQhL4BdATIB1AdBSqCf6Sw4mogIqgSTefKmjaMfIAkmevK3Uv/AH17mW/dZpVEu5N/2cpx/ohRaaNKX9NTD4QK8ZX2sST9KVl/3TaRMzWJMZq6fLNqCrqzetOsoFWM7JJSdTc3E3UWkh14bqW3jIJ+/y4MbMBvhsy9LpSQ9mhrzKjnp+0lzd6HQm6NmC/4QIaKNTACRP2VU8tNoXgjky6Iw3On1OQAm4u38tuaJ0zuYNJspIIr+5q5jxESFBbLlcgLbAFP5K42D6ooHg0JrSS6tlcHF8LLSmjNz2fEWVhvVCfpY9s+3gDq4cAtLCsqRAQ9qxvuiVYF4NKkzQROCRvRIPNepnGvQ3hhIy0pW7JEPLLYO5sQatIHLX6zUecTeyCz6vWl/mIb1XRDg+RtxvlK1apmey3gtFon1Kf1QxPw== aymen@AIR240"
+        exclusive: True
+      no_log: True
+
+    - name: Configurer l'utilisateur ansible-ag pour sudo sans mot de passe
+      lineinfile:
+        dest: /etc/sudoers
+        line: "ansible-ag ALL=(ALL) NOPASSWD: ALL"
+        validate: 'visudo -cf %s'
